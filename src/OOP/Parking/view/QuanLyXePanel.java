@@ -13,12 +13,12 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class QuanLyXeFrame extends JFrame {
+public class QuanLyXePanel extends JPanel {
     private ParkingService parkingService;
     private JTable table;
     private DefaultTableModel model;
 
-    public QuanLyXeFrame() {
+    public QuanLyXePanel() {
         try {
             parkingService = new ParkingServiceImpl();
             initUI();
@@ -29,12 +29,8 @@ public class QuanLyXeFrame extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Tra Cứu Xe Trong Bãi");
-        setSize(1000, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(UIUtils.BACKGROUND_COLOR);
+        setBackground(UIUtils.BACKGROUND_COLOR);
 
         // --- HEADER ---
         JPanel headerPanel = new JPanel(new BorderLayout());

@@ -15,14 +15,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class QuanLyVeFrame extends JFrame {
+public class QuanLyVePanel extends JPanel {
     private ParkingService parkingService;
     private JTable table;
     private DefaultTableModel model;
     private JTextField txtMaVe, txtBienSo, txtChuXe, txtSDT;
     private JComboBox<String> cbLoaiXe;
 
-    public QuanLyVeFrame() {
+    public QuanLyVePanel() {
         try {
             parkingService = new ParkingServiceImpl();
             initUI();
@@ -33,12 +33,8 @@ public class QuanLyVeFrame extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Quản Lý Vé Tháng");
-        setSize(1100, 700);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(UIUtils.BACKGROUND_COLOR);
+        setBackground(UIUtils.BACKGROUND_COLOR);
 
         // --- LEFT PANEL (Form) ---
         JPanel leftPanel = new JPanel();
@@ -67,7 +63,7 @@ public class QuanLyVeFrame extends JFrame {
         leftPanel.add(lblLoaiXe);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         
-        cbLoaiXe = new JComboBox<>(new String[]{"Xe Máy", "Ô tô", "Xe Đạp"});
+        cbLoaiXe = new JComboBox<>(new String[]{"Xe Máy", "Ô tô"});
         cbLoaiXe.setFont(UIUtils.FONT_NORMAL);
         cbLoaiXe.setBackground(Color.WHITE);
         cbLoaiXe.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));

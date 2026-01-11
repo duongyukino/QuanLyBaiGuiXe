@@ -14,12 +14,8 @@ public class UserController {
     }
 
     public List<User> getAllUsers() {
-        try {
-            return userDAO.getAll();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        // UserDAO.getAll() không ném IOException vì nó đọc từ Map trong bộ nhớ
+        return userDAO.getAll();
     }
 
     public boolean addUser(User user) {

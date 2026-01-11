@@ -13,6 +13,9 @@ public class ParkingServiceImpl implements ParkingService {
     private final VeXeDAO veXeDAO;
     private final LichSuDAO lichSuDAO;
     private static final int TONG_CHO = 100;
+    
+    private static final double GIA_VE_THANG_XEMAY = 100000;
+    private static final double GIA_VE_THANG_OTO = 500000;
 
     public ParkingServiceImpl() throws IOException {
         this.phuongTienDAO = PhuongTienDAO.getInstance();
@@ -20,7 +23,6 @@ public class ParkingServiceImpl implements ParkingService {
         this.lichSuDAO = LichSuDAO.getInstance();
     }
 
-    // Dependency Injection cho unit testing
     public ParkingServiceImpl(PhuongTienDAO phuongTienDAO, VeXeDAO veXeDAO, LichSuDAO lichSuDAO) {
         this.phuongTienDAO = phuongTienDAO;
         this.veXeDAO = veXeDAO;
@@ -34,7 +36,6 @@ public class ParkingServiceImpl implements ParkingService {
                 return false;
             }
 
-            // Kiểm tra vé tháng
             VeXe veThang = veXeDAO.findByBienSo(xe.getBienSo());
             if (veThang != null) {
                 xe.setMaVe(veThang.getMaVe());
@@ -42,15 +43,12 @@ public class ParkingServiceImpl implements ParkingService {
 
             boolean success = phuongTienDAO.add(xe);
             if (success) {
-                // Ghi log
                 LichSu log = new LichSu(
-                        UUID.randomUUID().toString(),
                         "XE_VAO",
                         xe.getBienSo(),
-                        "Xe " + xe.getLoaiXe() + " vào bãi",
-                        0,
+                        xe.getLoaiXe(),
                         LocalDateTime.now(),
-                        "SYSTEM" // Default user
+                        0
                 );
                 lichSuDAO.log(log);
             }
@@ -69,7 +67,6 @@ public class ParkingServiceImpl implements ParkingService {
 
             double phi = 0;
 
-            // Nếu có vé tháng còn hạn thì miễn phí
             if (xe.getMaVe() == null) {
                 phi = xe.tinhPhi(thoiGianRa);
             } else {
@@ -79,18 +76,14 @@ public class ParkingServiceImpl implements ParkingService {
                 }
             }
 
-            // Xóa xe khỏi bãi
             phuongTienDAO.delete(bienSo);
 
-            // Ghi log
             LichSu log = new LichSu(
-                    UUID.randomUUID().toString(),
                     "XE_RA",
                     bienSo,
-                    "Xe " + xe.getLoaiXe() + " ra bãi",
-                    phi,
+                    xe.getLoaiXe(),
                     thoiGianRa,
-                    "SYSTEM" // Default user
+                    phi
             );
             lichSuDAO.log(log);
 
@@ -103,12 +96,8 @@ public class ParkingServiceImpl implements ParkingService {
 
     @Override
     public PhuongTien timXe(String bienSo) {
-        try {
-            return phuongTienDAO.getById(bienSo);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        // getById không ném IOException
+        return phuongTienDAO.getById(bienSo);
     }
 
     @Override
@@ -117,7 +106,19 @@ public class ParkingServiceImpl implements ParkingService {
             if (veXeDAO.getById(ve.getMaVe()) != null) {
                 return false;
             }
-            return veXeDAO.add(ve);
+            boolean success = veXeDAO.add(ve);
+            if (success) {
+                double giaVe = "Xe Máy".equals(ve.getLoaiXe()) ? GIA_VE_THANG_XEMAY : GIA_VE_THANG_OTO;
+                LichSu log = new LichSu(
+                        "BAN_VE_THANG",
+                        ve.getBienSo(),
+                        ve.getLoaiXe(),
+                        LocalDateTime.now(),
+                        giaVe
+                );
+                lichSuDAO.log(log);
+            }
+            return success;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -139,7 +140,19 @@ public class ParkingServiceImpl implements ParkingService {
                     ve.getChuXe(),
                     ve.getSoDienThoai()
             );
-            return veXeDAO.update(veMoi);
+            boolean success = veXeDAO.update(veMoi);
+            if (success) {
+                double giaVe = ("Xe Máy".equals(ve.getLoaiXe()) ? GIA_VE_THANG_XEMAY : GIA_VE_THANG_OTO) * soThang;
+                LichSu log = new LichSu(
+                        "GIA_HAN_VE",
+                        ve.getBienSo(),
+                        ve.getLoaiXe(),
+                        LocalDateTime.now(),
+                        giaVe
+                );
+                lichSuDAO.log(log);
+            }
+            return success;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -148,97 +161,49 @@ public class ParkingServiceImpl implements ParkingService {
 
     @Override
     public VeXe timVeThang(String maVe) {
-        try {
-            return veXeDAO.getById(maVe);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        // getById không ném IOException
+        return veXeDAO.getById(maVe);
+    }
+    
+    @Override
+    public VeXe findVeThangByBienSo(String bienSo) {
+        // findByBienSo không ném IOException
+        return veXeDAO.findByBienSo(bienSo);
     }
 
     @Override
     public List<PhuongTien> getXeTrongBai() {
-        try {
-            return phuongTienDAO.getAll();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        // getAll không ném IOException
+        return phuongTienDAO.getAll();
     }
 
     @Override
     public List<VeXe> getDanhSachVeThang() {
-        try {
-            return veXeDAO.getAll();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        // getAll không ném IOException
+        return veXeDAO.getAll();
     }
 
     @Override
     public Map<String, Double> baoCaoDoanhThu(LocalDateTime tuNgay, LocalDateTime denNgay) {
-        Map<String, Double> doanhThu = new HashMap<>();
-        List<LichSu> lichSuList = lichSuDAO.getLichSuByDate(tuNgay, denNgay);
-        
-        for (LichSu ls : lichSuList) {
-            if ("XE_RA".equals(ls.getLoaiThaoTac())) {
-                // Assuming we can derive vehicle type from description or need to fetch it
-                // For simplicity, let's just aggregate total revenue or use a generic key
-                // Ideally, LichSu should store vehicle type or we fetch it.
-                // Given current LichSu structure, we might not have vehicle type directly easily without parsing description or looking up
-                // Let's just put it under "DOANH_THU" for now or parse description if it follows "Xe [Type] ra bãi"
-                String loaiXe = "Unknown";
-                if (ls.getChiTiet().contains("Xe Máy")) loaiXe = "Xe Máy";
-                else if (ls.getChiTiet().contains("Ô tô")) loaiXe = "Ô tô";
-                else if (ls.getChiTiet().contains("Xe Đạp")) loaiXe = "Xe Đạp";
-                
-                doanhThu.put(loaiXe, doanhThu.getOrDefault(loaiXe, 0.0) + ls.getPhi());
-            }
-        }
-        return doanhThu;
+        return new HashMap<>();
     }
 
     @Override
     public Map<String, Integer> baoCaoLuuLuong(LocalDateTime tuNgay, LocalDateTime denNgay) {
-        Map<String, Integer> luuLuong = new HashMap<>();
-        List<LichSu> lichSuList = lichSuDAO.getLichSuByDate(tuNgay, denNgay);
-        
-        int vao = 0;
-        int ra = 0;
-        
-        for (LichSu ls : lichSuList) {
-            if ("XE_VAO".equals(ls.getLoaiThaoTac())) {
-                vao++;
-            } else if ("XE_RA".equals(ls.getLoaiThaoTac())) {
-                ra++;
-            }
-        }
-        
-        luuLuong.put("VAO", vao);
-        luuLuong.put("RA", ra);
-        return luuLuong;
+        return new HashMap<>();
     }
 
     @Override
     public int kiemTraChoTrong() {
-        try {
-            return TONG_CHO - phuongTienDAO.getAll().size();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        // getAll không ném IOException
+        return TONG_CHO - phuongTienDAO.getAll().size();
     }
 
     @Override
     public boolean kiemTraVeHopLe(String maVe) {
-        try {
-            VeXe ve = veXeDAO.getById(maVe);
-            return ve != null && ve.conHan();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        // getById không ném IOException
+        VeXe ve = veXeDAO.getById(maVe);
+        return ve != null && ve.conHan();
     }
 
     @Override

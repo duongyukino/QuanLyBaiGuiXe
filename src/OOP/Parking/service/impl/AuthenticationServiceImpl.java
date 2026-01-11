@@ -16,14 +16,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public User login(String username, String password) {
-        try {
-            User user = userDAO.authenticate(username, password);
-            if (user != null) {
-                this.currentUser = user;
-                return user;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        // authenticate() không ném IOException
+        User user = userDAO.authenticate(username, password);
+        if (user != null) {
+            this.currentUser = user;
+            return user;
         }
         return null;
     }
@@ -40,14 +37,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
-        try {
-            User user = userDAO.getById(username);
-            if (user != null && user.authenticate(oldPassword)) {
-                user.setPassword(newPassword);
+        // getById() không ném IOException
+        User user = userDAO.getById(username);
+        
+        if (user != null && user.authenticate(oldPassword)) {
+            user.setPassword(newPassword);
+            try {
+                // update() CÓ ném IOException vì nó ghi file
                 return userDAO.update(user);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return false;
     }

@@ -1,6 +1,9 @@
 package OOP.Parking.view;
 
+import OOP.Parking.controller.LoginController;
+import OOP.Parking.service.AuthenticationService;
 import OOP.Parking.service.ParkingService;
+import OOP.Parking.service.impl.AuthenticationServiceImpl;
 import OOP.Parking.service.impl.ParkingServiceImpl;
 import OOP.Parking.util.UIUtils;
 
@@ -34,48 +37,60 @@ public class MainDashboard extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        // --- SIDEBAR (White & Clean) ---
-        sidebar = new JPanel();
+        // --- SIDEBAR (Gradient) ---
+        sidebar = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                int w = getWidth();
+                int h = getHeight();
+                GradientPaint gp = new GradientPaint(0, 0, UIUtils.PRIMARY_COLOR, 0, h, UIUtils.GRADIENT_END);
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, w, h);
+            }
+        };
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(Color.WHITE);
-        sidebar.setPreferredSize(new Dimension(260, 0));
-        sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230))); // Right border
+        sidebar.setPreferredSize(new Dimension(280, 0));
 
         // Logo Area
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
-        logoPanel.setBackground(Color.WHITE);
-        JLabel lblLogo = new JLabel("PARKING PRO");
-        lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblLogo.setForeground(UIUtils.PRIMARY_COLOR);
+        logoPanel.setOpaque(false); // Transparent
+        JLabel lblLogo = new JLabel(UIUtils.ICON_PARKING + " PARKING PRO");
+        lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblLogo.setForeground(Color.WHITE); // White text on gradient
         logoPanel.add(lblLogo);
         sidebar.add(logoPanel);
         
         sidebar.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Menu Items
-        addMenuItem("Trang Chủ", e -> showHome());
-        addMenuItem("Quản Lý Xe", e -> moManHinhXeVao());
-        addMenuItem("Tra Cứu", e -> moManHinhTraCuu());
+        addMenuItem(UIUtils.ICON_HOME + " Trang Chủ", e -> showHome());
+        addMenuItem(UIUtils.ICON_CAR + " Quản Lý Xe", e -> moManHinhXeVao());
+        addMenuItem(UIUtils.ICON_SEARCH + " Tra Cứu Xe", e -> moManHinhTraCuu());
         
-        if (vaiTro.equals("QUẢN LÝ")) {
-            addMenuItem("Vé Tháng", e -> moManHinhDangKyVe());
-            addMenuItem("Báo Cáo", e -> moManHinhBaoCaoDoanhThu());
+        if ("QUẢN LÝ".equals(vaiTro)) {
+            addMenuItem(UIUtils.ICON_HISTORY + " Lịch Sử", e -> moManHinhLichSu());
+            addMenuItem(UIUtils.ICON_TICKET + " Vé Tháng", e -> moManHinhDangKyVe());
+            addMenuItem(UIUtils.ICON_REPORT + " Báo Cáo", e -> moManHinhBaoCaoDoanhThu());
         }
         
         sidebar.add(Box.createVerticalGlue());
         
-        // User Profile Area
+        // User Profile
         JPanel userPanel = new JPanel(new BorderLayout());
-        userPanel.setBackground(new Color(240, 248, 255));
+        userPanel.setOpaque(false);
         userPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
         
-        JLabel lblUser = new JLabel(vaiTro);
+        JLabel lblUser = new JLabel((vaiTro.equals("QUẢN LÝ") ? UIUtils.ICON_ADMIN : UIUtils.ICON_USER) + " " + vaiTro);
         lblUser.setFont(UIUtils.FONT_BOLD);
-        lblUser.setForeground(UIUtils.PRIMARY_COLOR);
+        lblUser.setForeground(Color.WHITE);
         
-        JButton btnLogout = new JButton("Đăng xuất");
-        btnLogout.setFont(UIUtils.FONT_SMALL);
-        btnLogout.setForeground(UIUtils.ACCENT_COLOR);
+        JButton btnLogout = new JButton(UIUtils.ICON_LOGOUT);
+        btnLogout.setToolTipText("Đăng xuất");
+        btnLogout.setFont(UIUtils.FONT_NORMAL);
+        btnLogout.setForeground(Color.WHITE);
         btnLogout.setBorderPainted(false);
         btnLogout.setContentAreaFilled(false);
         btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -98,27 +113,27 @@ public class MainDashboard extends JFrame {
     private void addMenuItem(String text, java.awt.event.ActionListener action) {
         JButton btn = new JButton(text);
         btn.setFont(UIUtils.FONT_NORMAL);
-        btn.setForeground(UIUtils.TEXT_COLOR);
-        btn.setBackground(Color.WHITE);
+        btn.setForeground(Color.WHITE); // White text
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
         btn.setBorder(new EmptyBorder(12, 30, 12, 30));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
-        btn.setMaximumSize(new Dimension(260, 50));
+        btn.setMaximumSize(new Dimension(280, 50));
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         btn.addActionListener(action);
         
-        // Hover effect
+        // Hover effect (Semi-transparent white)
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(240, 247, 255));
-                btn.setForeground(UIUtils.PRIMARY_COLOR);
+                btn.setOpaque(true);
+                btn.setBackground(new Color(255, 255, 255, 50)); // 20% White
                 btn.setFont(UIUtils.FONT_BOLD);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                btn.setBackground(Color.WHITE);
-                btn.setForeground(UIUtils.TEXT_COLOR);
+                btn.setOpaque(false);
                 btn.setFont(UIUtils.FONT_NORMAL);
             }
         });
@@ -134,7 +149,7 @@ public class MainDashboard extends JFrame {
         homePanel.setBorder(new EmptyBorder(40, 40, 40, 40));
         
         // Header
-        JLabel lblTitle = new JLabel("Tổng Quan Hôm Nay");
+        JLabel lblTitle = new JLabel("Tổng Quan Hôm Nay " + UIUtils.ICON_TIME);
         lblTitle.setFont(UIUtils.FONT_TITLE);
         lblTitle.setForeground(UIUtils.TEXT_COLOR);
         homePanel.add(lblTitle, BorderLayout.NORTH);
@@ -144,9 +159,14 @@ public class MainDashboard extends JFrame {
         cardsPanel.setOpaque(false);
         
         int choTrong = parkingService.kiemTraChoTrong();
-        cardsPanel.add(createStatCard("Chỗ Trống", String.valueOf(choTrong), UIUtils.SECONDARY_COLOR));
-        cardsPanel.add(createStatCard("Đang Gửi", String.valueOf(100 - choTrong), UIUtils.PRIMARY_COLOR));
-        cardsPanel.add(createStatCard("Cảnh Báo", "0", UIUtils.ACCENT_COLOR)); // Placeholder
+        cardsPanel.add(createStatCard("Chỗ Trống", String.valueOf(choTrong), UIUtils.ICON_CHECK, UIUtils.SECONDARY_COLOR));
+        cardsPanel.add(createStatCard("Đang Gửi", String.valueOf(100 - choTrong), UIUtils.ICON_CAR, UIUtils.PRIMARY_COLOR));
+        
+        if ("QUẢN LÝ".equals(vaiTro)) {
+            cardsPanel.add(createStatCard("Cảnh Báo", "0", UIUtils.ICON_WARNING, UIUtils.ACCENT_COLOR));
+        } else {
+            cardsPanel.add(createStatCard("Ca Trực", "Sáng", UIUtils.ICON_USER, Color.GRAY));
+        }
 
         homePanel.add(cardsPanel, BorderLayout.CENTER);
         
@@ -155,7 +175,7 @@ public class MainDashboard extends JFrame {
         contentPanel.repaint();
     }
 
-    private JPanel createStatCard(String title, String value, Color color) {
+    private JPanel createStatCard(String title, String value, String icon, Color color) {
         JPanel card = UIUtils.createCardPanel();
         card.setLayout(new BorderLayout());
         card.setBorder(new EmptyBorder(20, 25, 20, 25));
@@ -167,17 +187,59 @@ public class MainDashboard extends JFrame {
         JLabel lblValue = new JLabel(value);
         lblValue.setFont(new Font("Segoe UI", Font.BOLD, 48));
         lblValue.setForeground(color);
+        
+        JLabel lblIcon = new JLabel(icon);
+        lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+        lblIcon.setForeground(new Color(200, 200, 200));
 
         card.add(lblTitle, BorderLayout.NORTH);
         card.add(lblValue, BorderLayout.CENTER);
+        card.add(lblIcon, BorderLayout.EAST);
         
         return card;
     }
 
     // Navigation methods
-    private void moManHinhXeVao() { new ParkingUI().setVisible(true); }
-    private void moManHinhTraCuu() { new QuanLyXeFrame().setVisible(true); }
-    private void moManHinhDangKyVe() { new QuanLyVeFrame().setVisible(true); }
-    private void moManHinhBaoCaoDoanhThu() { new BaoCaoFrame().setVisible(true); }
-    private void logout() { dispose(); new LoginFrame().setVisible(true); }
+    private void moManHinhXeVao() { 
+        contentPanel.removeAll();
+        contentPanel.add(new ParkingPanel());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    private void moManHinhTraCuu() { 
+        contentPanel.removeAll();
+        contentPanel.add(new QuanLyXePanel());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    private void moManHinhLichSu() { 
+        contentPanel.removeAll();
+        contentPanel.add(new LichSuPanel());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    private void moManHinhDangKyVe() { 
+        contentPanel.removeAll();
+        contentPanel.add(new QuanLyVePanel());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    private void moManHinhBaoCaoDoanhThu() { 
+        contentPanel.removeAll();
+        contentPanel.add(new BaoCaoPanel());
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    
+    private void logout() {
+        dispose();
+        try {
+            LoginFrame loginFrame = new LoginFrame();
+            AuthenticationService authService = new AuthenticationServiceImpl();
+            new LoginController(loginFrame, authService);
+            loginFrame.setVisible(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -18,6 +18,7 @@ public interface ParkingService {
     boolean dangKyVeThang(VeXe ve);
     boolean giaHanVeThang(String maVe, int soThang);
     VeXe timVeThang(String maVe);
+    VeXe findVeThangByBienSo(String bienSo); // Thêm phương thức này
 
     // Tra cứu
     List<PhuongTien> getXeTrongBai();

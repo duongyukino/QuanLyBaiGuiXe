@@ -14,10 +14,14 @@ public class UIUtils {
     public static final Color SECONDARY_COLOR = new Color(46, 204, 113);  // Emerald Green
     public static final Color ACCENT_COLOR = new Color(231, 76, 60);      // Alizarin Red
     public static final Color WARNING_COLOR = new Color(241, 196, 15);    // Sun Flower Yellow
-    public static final Color BACKGROUND_COLOR = new Color(245, 247, 250); // Clouds (Very light grey)
+    public static final Color BACKGROUND_COLOR = new Color(245, 247, 250); // Clouds
     public static final Color CARD_BG = Color.WHITE;
     public static final Color TEXT_COLOR = new Color(44, 62, 80);         // Midnight Blue
     public static final Color TEXT_MUTED = new Color(127, 140, 141);      // Asbestos
+    
+    // Gradient Colors
+    public static final Color GRADIENT_START = new Color(41, 128, 185);   // Belize Hole
+    public static final Color GRADIENT_END = new Color(109, 213, 250);    // Light Blue
 
     // Fonts
     public static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 28);
@@ -25,6 +29,27 @@ public class UIUtils {
     public static final Font FONT_NORMAL = new Font("Segoe UI", Font.PLAIN, 14);
     public static final Font FONT_BOLD = new Font("Segoe UI", Font.BOLD, 14);
     public static final Font FONT_SMALL = new Font("Segoe UI", Font.PLAIN, 12);
+    public static final Font FONT_ICON = new Font("Segoe UI Emoji", Font.PLAIN, 24);
+
+    // Icons (Unicode)
+    public static final String ICON_PARKING = "🅿️";
+    public static final String ICON_CAR = "🚗";
+    public static final String ICON_MOTO = "🛵";
+    public static final String ICON_BIKE = "🚲";
+    public static final String ICON_USER = "👤";
+    public static final String ICON_ADMIN = "👮";
+    public static final String ICON_SEARCH = "🔍";
+    public static final String ICON_CHECK = "✅";
+    public static final String ICON_MONEY = "💰";
+    public static final String ICON_HISTORY = "📜";
+    public static final String ICON_REPORT = "📊";
+    public static final String ICON_LOGOUT = "🚪";
+    public static final String ICON_HOME = "🏠";
+    public static final String ICON_TICKET = "🎫";
+    public static final String ICON_REFRESH = "🔄";
+    public static final String ICON_WARNING = "⚠️";
+    public static final String ICON_ADD = "➕";
+    public static final String ICON_TIME = "⏰";
 
     // Rounded Button
     public static JButton createButton(String text, Color bgColor) {
@@ -62,17 +87,15 @@ public class UIUtils {
         table.setGridColor(new Color(230, 230, 230));
         table.setShowVerticalLines(false);
         table.setIntercellSpacing(new Dimension(0, 0));
-        table.setSelectionBackground(new Color(220, 240, 255)); // Light Blue selection
+        table.setSelectionBackground(new Color(220, 240, 255));
         table.setSelectionForeground(TEXT_COLOR);
 
-        // Header
         table.getTableHeader().setFont(FONT_BOLD);
         table.getTableHeader().setBackground(Color.WHITE);
         table.getTableHeader().setForeground(PRIMARY_COLOR);
         table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, PRIMARY_COLOR));
         table.getTableHeader().setPreferredSize(new Dimension(0, 40));
 
-        // Center align cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
@@ -85,7 +108,7 @@ public class UIUtils {
         txt.setFont(FONT_NORMAL);
         txt.setForeground(TEXT_COLOR);
         txt.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)), // Underline style
+                BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         txt.setBackground(Color.WHITE);
     }
@@ -104,5 +127,22 @@ public class UIUtils {
         };
         panel.setOpaque(false);
         return panel;
+    }
+    
+    // Gradient Panel Helper
+    public static JPanel createGradientPanel() {
+        return new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                int w = getWidth();
+                int h = getHeight();
+                GradientPaint gp = new GradientPaint(0, 0, GRADIENT_START, w, h, GRADIENT_END);
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, w, h);
+            }
+        };
     }
 }

@@ -6,7 +6,9 @@ import OOP.Parking.model.LichSu;
 import OOP.Parking.service.BaoCaoService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,44 +23,75 @@ public class BaoCaoServiceImpl implements BaoCaoService {
     }
 
     @Override
-    public Map<String, Double> baoCaoDoanhThu(LocalDateTime tuNgay, LocalDateTime denNgay) {
-        Map<String, Double> doanhThu = new HashMap<>();
-        List<LichSu> lichSuList = lichSuDAO.getLichSuByDate(tuNgay, denNgay);
+    public Map<String, Double> baoCaoDoanhThuNgay(LocalDate date) {
+        Map<String, Double> result = new HashMap<>();
+        result.put("Xe Máy", 0.0);
+        result.put("Ô tô", 0.0);
 
-        for (LichSu ls : lichSuList) {
+        LocalDateTime start = LocalDateTime.of(date, LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(date, LocalTime.MAX);
+        List<LichSu> list = lichSuDAO.getLichSuByDate(start, end);
+
+        for (LichSu ls : list) {
             if ("XE_RA".equals(ls.getLoaiThaoTac())) {
-                // Phân loại xe dựa trên chi tiết hoặc cần thêm trường loại xe vào LichSu
-                // Tạm thời giả định chi tiết có chứa tên loại xe
-                String loaiXe = "Khác";
-                if (ls.getChiTiet().contains("Xe Máy")) loaiXe = "Xe Máy";
-                else if (ls.getChiTiet().contains("Ô tô")) loaiXe = "Ô tô";
-                else if (ls.getChiTiet().contains("Xe Đạp")) loaiXe = "Xe Đạp";
-
-                doanhThu.put(loaiXe, doanhThu.getOrDefault(loaiXe, 0.0) + ls.getPhi());
+                if ("Xe Máy".equals(ls.getLoaiXe())) {
+                    result.put("Xe Máy", result.get("Xe Máy") + ls.getPhi());
+                } else if ("Ô tô".equals(ls.getLoaiXe())) {
+                    result.put("Ô tô", result.get("Ô tô") + ls.getPhi());
+                }
             }
         }
-        return doanhThu;
+        return result;
+    }
+
+    @Override
+    public Map<String, Double> baoCaoDoanhThuThang(int month, int year) {
+        Map<String, Double> result = new HashMap<>();
+        result.put("VE_NGAY_XEMAY", 0.0);
+        result.put("VE_NGAY_OTO", 0.0);
+        result.put("VE_THANG_XEMAY", 0.0);
+        result.put("VE_THANG_OTO", 0.0);
+        
+        LocalDate firstDay = LocalDate.of(year, month, 1);
+        LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
+        LocalDateTime start = LocalDateTime.of(firstDay, LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(lastDay, LocalTime.MAX);
+
+        List<LichSu> list = lichSuDAO.getLichSuByDate(start, end);
+
+        for (LichSu ls : list) {
+            boolean isXeMay = "Xe Máy".equals(ls.getLoaiXe());
+            boolean isOto = "Ô tô".equals(ls.getLoaiXe());
+
+            if ("XE_RA".equals(ls.getLoaiThaoTac())) {
+                if (isXeMay) result.put("VE_NGAY_XEMAY", result.get("VE_NGAY_XEMAY") + ls.getPhi());
+                if (isOto) result.put("VE_NGAY_OTO", result.get("VE_NGAY_OTO") + ls.getPhi());
+            } 
+            else if ("BAN_VE_THANG".equals(ls.getLoaiThaoTac()) || "GIA_HAN_VE".equals(ls.getLoaiThaoTac())) {
+                if (isXeMay) result.put("VE_THANG_XEMAY", result.get("VE_THANG_XEMAY") + ls.getPhi());
+                if (isOto) result.put("VE_THANG_OTO", result.get("VE_THANG_OTO") + ls.getPhi());
+            }
+        }
+
+        double tongXeMay = result.get("VE_NGAY_XEMAY") + result.get("VE_THANG_XEMAY");
+        double tongOto = result.get("VE_NGAY_OTO") + result.get("VE_THANG_OTO");
+        
+        result.put("TONG_XEMAY", tongXeMay);
+        result.put("TONG_OTO", tongOto);
+        result.put("TONG_CONG", tongXeMay + tongOto);
+
+        return result;
+    }
+
+    // --- Deprecated methods ---
+    @Override
+    public Map<String, Double> baoCaoDoanhThu(LocalDateTime tuNgay, LocalDateTime denNgay) {
+        return new HashMap<>();
     }
 
     @Override
     public Map<String, Integer> baoCaoLuuLuong(LocalDateTime tuNgay, LocalDateTime denNgay) {
-        Map<String, Integer> luuLuong = new HashMap<>();
-        List<LichSu> lichSuList = lichSuDAO.getLichSuByDate(tuNgay, denNgay);
-
-        int vao = 0;
-        int ra = 0;
-
-        for (LichSu ls : lichSuList) {
-            if ("XE_VAO".equals(ls.getLoaiThaoTac())) {
-                vao++;
-            } else if ("XE_RA".equals(ls.getLoaiThaoTac())) {
-                ra++;
-            }
-        }
-
-        luuLuong.put("VAO", vao);
-        luuLuong.put("RA", ra);
-        return luuLuong;
+        return new HashMap<>();
     }
 
     @Override
@@ -67,7 +100,6 @@ public class BaoCaoServiceImpl implements BaoCaoService {
         try {
             hienTrang.put("Xe Máy", phuongTienDAO.countByType("Xe Máy"));
             hienTrang.put("Ô tô", phuongTienDAO.countByType("Ô tô"));
-            hienTrang.put("Xe Đạp", phuongTienDAO.countByType("Xe Đạp"));
         } catch (Exception e) {
             e.printStackTrace();
         }

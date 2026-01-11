@@ -4,12 +4,6 @@
 # Log file
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -18,9 +12,6 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
 
 # IntelliJ IDEA
 .idea/
@@ -31,18 +22,10 @@ out/
 
 # Maven
 target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.properties
+.mvn/
 
-# Data files (Tùy chọn: Nếu bạn muốn giữ dữ liệu mẫu thì bỏ dòng này đi)
-# src/main/resources/data/*.csv
+# Data files (QUAN TRỌNG: Bỏ qua thư mục data bên ngoài, nhưng GIỮ LẠI src/main/resources/data)
+data/
 
 # OS specific
 .DS_Store

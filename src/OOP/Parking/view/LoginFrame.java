@@ -13,18 +13,17 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         setTitle("Đăng Nhập - Hệ Thống Quản Lý Bãi Xe");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 600); // Mở rộng kích thước để thoáng hơn
+        setSize(900, 600);
         setLocationRelativeTo(null);
         
         initComponents();
     }
 
     private void initComponents() {
-        // Background Panel với Gradient nhẹ (nếu muốn) hoặc màu solid tươi
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(UIUtils.BACKGROUND_COLOR);
+        // Sử dụng Gradient Panel làm nền
+        JPanel mainPanel = UIUtils.createGradientPanel();
+        mainPanel.setLayout(new GridBagLayout());
 
-        // Card Panel (Hộp đăng nhập)
         JPanel cardPanel = UIUtils.createCardPanel();
         cardPanel.setLayout(new GridBagLayout());
         cardPanel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
@@ -34,8 +33,8 @@ public class LoginFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        // Logo/Icon (Text Art đơn giản)
-        JLabel lblIcon = new JLabel("🅿️", SwingConstants.CENTER);
+        // Logo
+        JLabel lblIcon = new JLabel(UIUtils.ICON_PARKING, SwingConstants.CENTER);
         lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
         gbc.gridy = 0;
         cardPanel.add(lblIcon, gbc);
@@ -47,7 +46,7 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 1;
         cardPanel.add(lblTitle, gbc);
 
-        JLabel lblSubtitle = new JLabel("Đăng nhập để tiếp tục", SwingConstants.CENTER);
+        JLabel lblSubtitle = new JLabel("Hệ Thống Quản Lý Bãi Xe", SwingConstants.CENTER);
         lblSubtitle.setFont(UIUtils.FONT_NORMAL);
         lblSubtitle.setForeground(UIUtils.TEXT_MUTED);
         gbc.gridy = 2;
@@ -57,7 +56,7 @@ public class LoginFrame extends JFrame {
         // Username
         gbc.gridy = 3;
         gbc.insets = new Insets(10, 0, 5, 0);
-        JLabel lblUser = new JLabel("Tài khoản");
+        JLabel lblUser = new JLabel(UIUtils.ICON_USER + " Tài khoản");
         lblUser.setFont(UIUtils.FONT_BOLD);
         lblUser.setForeground(UIUtils.TEXT_COLOR);
         cardPanel.add(lblUser, gbc);
@@ -71,7 +70,7 @@ public class LoginFrame extends JFrame {
         // Password
         gbc.gridy = 5;
         gbc.insets = new Insets(5, 0, 5, 0);
-        JLabel lblPass = new JLabel("Mật khẩu");
+        JLabel lblPass = new JLabel("🔑 Mật khẩu");
         lblPass.setFont(UIUtils.FONT_BOLD);
         lblPass.setForeground(UIUtils.TEXT_COLOR);
         cardPanel.add(lblPass, gbc);
@@ -88,7 +87,6 @@ public class LoginFrame extends JFrame {
         btnLogin.setPreferredSize(new Dimension(250, 45));
         cardPanel.add(btnLogin, gbc);
 
-        // Add Card to Main
         mainPanel.add(cardPanel);
         setContentPane(mainPanel);
         getRootPane().setDefaultButton(btnLogin);

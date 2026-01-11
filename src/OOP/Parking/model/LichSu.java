@@ -3,77 +3,32 @@ package OOP.Parking.model;
 import java.time.LocalDateTime;
 
 public class LichSu {
-    private String id;
-    private String loaiThaoTac; // Changed from action
+    private String loaiThaoTac; // XE_VAO, XE_RA, BAN_VE_THANG...
     private String bienSo;
-    private String chiTiet; // Changed from moTa
-    private double phi;
+    private String loaiXe;      // Thêm trường này: Xe Máy, Ô tô
     private LocalDateTime thoiGian;
-    private String nguoiThucHien;
+    private double phi;
 
-    public LichSu(String id, String loaiThaoTac, String bienSo, String chiTiet, double phi, LocalDateTime thoiGian, String nguoiThucHien) {
-        this.id = id;
+    public LichSu(String loaiThaoTac, String bienSo, String loaiXe, LocalDateTime thoiGian, double phi) {
         this.loaiThaoTac = loaiThaoTac;
         this.bienSo = bienSo;
-        this.chiTiet = chiTiet;
-        this.phi = phi;
+        this.loaiXe = loaiXe;
         this.thoiGian = thoiGian;
-        this.nguoiThucHien = nguoiThucHien;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getLoaiThaoTac() {
-        return loaiThaoTac;
-    }
-
-    public void setLoaiThaoTac(String loaiThaoTac) {
-        this.loaiThaoTac = loaiThaoTac;
-    }
-
-    public String getBienSo() {
-        return bienSo;
-    }
-
-    public void setBienSo(String bienSo) {
-        this.bienSo = bienSo;
-    }
-
-    public String getChiTiet() {
-        return chiTiet;
-    }
-
-    public void setChiTiet(String chiTiet) {
-        this.chiTiet = chiTiet;
-    }
-
-    public double getPhi() {
-        return phi;
-    }
-
-    public void setPhi(double phi) {
         this.phi = phi;
     }
 
-    public LocalDateTime getThoiGian() {
-        return thoiGian;
-    }
+    public String getLoaiThaoTac() { return loaiThaoTac; }
+    public void setLoaiThaoTac(String loaiThaoTac) { this.loaiThaoTac = loaiThaoTac; }
 
-    public void setThoiGian(LocalDateTime thoiGian) {
-        this.thoiGian = thoiGian;
-    }
+    public String getBienSo() { return bienSo; }
+    public void setBienSo(String bienSo) { this.bienSo = bienSo; }
 
-    public String getNguoiThucHien() {
-        return nguoiThucHien;
-    }
+    public String getLoaiXe() { return loaiXe; }
+    public void setLoaiXe(String loaiXe) { this.loaiXe = loaiXe; }
 
-    public void setNguoiThucHien(String nguoiThucHien) {
-        this.nguoiThucHien = nguoiThucHien;
-    }
+    public LocalDateTime getThoiGian() { return thoiGian; }
+    public void setThoiGian(LocalDateTime thoiGian) { this.thoiGian = thoiGian; }
+
+    public double getPhi() { return phi; }
+    public void setPhi(double phi) { this.phi = phi; }
 }

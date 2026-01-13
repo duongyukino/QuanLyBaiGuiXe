@@ -82,18 +82,3 @@ Dữ liệu được lưu trong thư mục `data/` (tự động tạo khi chạ
 *   `ve_thang.csv`: Danh sách vé tháng.
 *   `phuong_tien.csv`: Xe đang trong bãi.
 *   `lich_su.csv`: Lịch sử ra vào và doanh thu.
-
----
-
-## 📸 Giao Diện (Screenshots)
-
-*(Bạn có thể thêm ảnh chụp màn hình vào đây để file README sinh động hơn)*
-
----
-
-## 🤝 Đóng Góp
-
-Mọi ý kiến đóng góp đều được hoan nghênh! Hãy tạo **Issue** hoặc **Pull Request** nếu bạn muốn cải thiện dự án.
-
----
-**Developed by [Your Name]**
